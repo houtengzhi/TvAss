@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:background="#bcbbbb">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:id="@+id/iv_remote_channel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="25dp"
+            android:src="@drawable/bg_chn" />
+
+        <ImageView
+            android:id="@+id/iv_remote_volume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="25dp"
+            android:src="@drawable/bg_vol" />
+
+        <ImageButton
+            android:id="@+id/imgBtn_remote_ch_plus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/iv_remote_channel"
+            android:layout_alignTop="@id/iv_remote_channel"
+            android:background="@drawable/btn_bg"
+            android:src="@drawable/btn_plus" />
+
+        <ImageButton
+            android:id="@+id/imgBtn_remote_ch_minus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/iv_remote_channel"
+            android:layout_alignLeft="@id/iv_remote_channel"
+            android:background="@drawable/btn_bg"
+            android:src="@drawable/btn_minus" />
+
+        <ImageButton
+            android:id="@+id/imgBtn_remote_vol_plus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/iv_remote_volume"
+            android:layout_alignTop="@id/iv_remote_volume"
+            android:background="@drawable/btn_bg"
+            android:src="@drawable/btn_plus" />
+
+        <ImageButton
+            android:id="@+id/imgBtn_remote_vol_minus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/iv_remote_volume"
+            android:layout_alignLeft="@id/iv_remote_volume"
+            android:background="@drawable/btn_bg"
+            android:src="@drawable/btn_minus" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_remote_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_bg"
+                android:text="HOME"
+                android:textColor="#ff336977"
+                android:textSize="12sp"/>
+
+            <Button
+                android:id="@+id/btn_remote_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_bg"
+                android:text="INPUT"
+                android:textColor="#ff336977"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_remote_red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:background="@drawable/btn_bg_l"
+            android:src="@drawable/btn_red" />
+
+        <ImageButton
+            android:id="@+id/btn_remote_green"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:background="@drawable/btn_bg_l"
+            android:src="@drawable/btn_green" />
+
+        <ImageButton
+            android:id="@+id/btn_remote_yellow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
+            android:background="@drawable/btn_bg_l"
+            android:src="@drawable/btn_yellow" />
+
+        <ImageButton
+            android:id="@+id/btn_remote_blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_bg_l"
+            android:src="@drawable/btn_blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/btn_remote_left"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/btn_prev"
+            android:background="@null"
+            android:alpha="0xff"
+            android:layout_marginRight="120dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_remote_right"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/btn_next"
+            android:background="@null"
+            android:alpha="0xff"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible"
+            android:paddingTop="3dp"
+            android:id="@+id/relativeLayout_num">
+
+            <Button
+                android:id="@+id/btn_remote_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/btn_round_bg"
+                android:text="1"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/btn_remote_1"
+                android:layout_toRightOf="@id/btn_remote_1"
+                android:background="@drawable/btn_round_bg"
+                android:text="2"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/btn_remote_2"
+                android:layout_alignTop="@id/btn_remote_2"
+                android:background="@drawable/btn_round_bg"
+                android:text="3"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/btn_remote_1"
+                android:layout_below="@id/btn_remote_1"
+                android:background="@drawable/btn_round_bg"
+                android:text="4"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/btn_remote_4"
+                android:layout_toRightOf="@id/btn_remote_4"
+                android:background="@drawable/btn_round_bg"
+                android:text="5"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/btn_remote_5"
+                android:layout_toRightOf="@id/btn_remote_5"
+                android:background="@drawable/btn_round_bg"
+                android:text="6"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/btn_remote_4"
+                android:layout_below="@id/btn_remote_4"
+                android:background="@drawable/btn_round_bg"
+                android:text="7"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/btn_remote_7"
+                android:layout_toRightOf="@id/btn_remote_7"
+                android:background="@drawable/btn_round_bg"
+                android:text="8"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/btn_remote_8"
+                android:layout_toRightOf="@id/btn_remote_8"
+                android:background="@drawable/btn_round_bg"
+                android:text="9"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_num_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/btn_remote_7"
+                android:layout_below="@id/btn_remote_7"
+                android:background="@drawable/btn_round_bg"
+                android:text="Back"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/btn_remote_num_back"
+                android:layout_toRightOf="@id/btn_remote_num_back"
+                android:background="@drawable/btn_round_bg"
+                android:text="0"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_remote_num_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/btn_remote_0"
+                android:layout_toRightOf="@id/btn_remote_0"
+                android:background="@drawable/btn_round_bg"
+                android:text="Ok"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlayout_remote_navi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_centerInParent="true">
+
+            <RelativeLayout
+                android:id="@+id/rLayout_remote_navigation"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/bg_nav0" />
+
+                <Button
+                    android:id="@+id/btn_remote_navi_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/btn_ok_bg"
+                    android:text="OK" />
+
+                <ImageButton
+                    android:id="@+id/btn_remote_navi_up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/imageView"
+                    android:layout_centerHorizontal="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/btn_up" />
+
+                <ImageButton
+                    android:id="@+id/btn_remote_navi_down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignBottom="@id/imageView"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/btn_down" />
+
+                <ImageButton
+                    android:id="@+id/btn_remote_navi_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/imageView"
+                    android:layout_centerVertical="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/btn_left" />
+
+                <ImageButton
+                    android:id="@+id/btn_remote_navi_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignRight="@id/imageView"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/btn_right" />
+            </RelativeLayout>
+
+            <ImageButton
+                android:id="@+id/btn_remote_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_bg_m"
+                android:src="@drawable/btn_menu"
+                android:layout_toLeftOf="@id/rLayout_remote_navigation"
+                android:layout_alignTop="@id/rLayout_remote_navigation"/>
+
+            <ImageButton
+                android:id="@+id/btn_remote_mute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_bg_m"
+                android:src="@drawable/btn_mute"
+                android:layout_toLeftOf="@id/rLayout_remote_navigation"
+                android:layout_alignBottom="@id/rLayout_remote_navigation"/>
+
+            <ImageButton
+                android:id="@+id/btn_remote_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_bg_m"
+                android:src="@drawable/btn_back"
+                android:layout_toRightOf="@id/rLayout_remote_navigation"
+                android:layout_alignTop="@id/rLayout_remote_navigation"/>
+
+            <ImageButton
+                android:id="@+id/btn_remote_exit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_bg_m"
+                android:src="@drawable/btn_exit"
+                android:layout_toRightOf="@id/rLayout_remote_navigation"
+                android:layout_alignBottom="@id/rLayout_remote_navigation"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout_touchpad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:visibility="gone">
+
+            <com.example.yechy.tvass.widget.TouchPadView
+                android:id="@+id/touchPadview"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="@drawable/bg_pointer"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"/>
+
+            <Button
+                android:id="@+id/btnMouseLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_round"
+                android:text="LEFT"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:layout_below="@id/touchPadview"
+                android:layout_alignLeft="@id/touchPadview"/>
+
+            <Button
+                android:id="@+id/btnMouseRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_round"
+                android:text="RIGHT"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:layout_below="@id/touchPadview"
+                android:layout_alignRight="@id/touchPadview"/>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout_msg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <EditText
+                android:id="@+id/etComment"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:textSize="16sp"
+                android:textColor="#555555"
+                android:hint="请输入不超过一百四十字的内容..."
+                android:background="@drawable/bg_edit_comments"
+                android:gravity="left|top"
+                android:padding="2dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="5dp"/>
+
+            <com.example.yechy.tvass.widget.SendCommentButton
+                android:id="@+id/btnSendComment"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/btn_send_comment"
+                android:orientation="vertical"
+                android:layout_below="@id/etComment"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

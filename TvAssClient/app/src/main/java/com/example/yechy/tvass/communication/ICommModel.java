@@ -1,0 +1,13 @@
+package com.example.yechy.tvass.communication;
+
+import io.reactivex.Observable;
+
+/**
+ * Created by yechy on 2017/4/22.
+ */
+
+public interface ICommModel {
+    Observable searchDevice();
+    Observable connectDevice(String ip, int port);
+    Observable sendKeyCode(int keyCode);
+}
