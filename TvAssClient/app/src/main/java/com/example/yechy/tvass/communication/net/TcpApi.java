@@ -18,8 +18,8 @@ import io.reactivex.ObservableOnSubscribe;
  * Created by yechy on 2017/4/22.
  */
 
-public class TcpClient {
-    private final static String TAG = TcpClient.class.getSimpleName();
+public class TcpApi {
+    private final static String TAG = TcpApi.class.getSimpleName();
 
     private static final int CONNECT_TIMEOUT = 5000;
     private static final int INPUTSTREAM_READ_TIMEOUT = 300;
@@ -27,7 +27,7 @@ public class TcpClient {
     private InputStream mInputStream;
     private OutputStream mOutputStream;
 
-    public TcpClient() {
+    public TcpApi() {
     }
 
     /**

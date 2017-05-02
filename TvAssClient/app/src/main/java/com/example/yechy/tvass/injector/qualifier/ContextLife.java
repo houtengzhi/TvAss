@@ -1,4 +1,4 @@
-package com.example.yechy.tvass.injector.scope;
+package com.example.yechy.tvass.injector.qualifier;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

@@ -7,7 +7,7 @@ import io.reactivex.Observable;
  */
 
 public interface ICommModel {
-    Observable searchDevice();
+    Observable searchDevice(int ip);
     Observable connectDevice(String ip, int port);
     Observable sendKeyCode(int keyCode);
 }

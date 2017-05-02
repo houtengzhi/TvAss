@@ -1,14 +1,20 @@
 package com.example.yechy.tvass.communication.net;
 
-import com.example.yechy.tvass.communication.Constant;
-import com.example.yechy.tvass.util.LogUtil;
-
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
-import java.net.SocketTimeoutException;
+import java.net.NetworkInterface;
+import java.net.SocketAddress;
+import java.net.StandardProtocolFamily;
+import java.net.StandardSocketOptions;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.Iterator;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -21,8 +27,8 @@ import io.reactivex.functions.Cancellable;
  * Created by yechy on 2017/4/15.
  */
 
-public class UdpClient {
-    private static final String TAG = UdpClient.class.getSimpleName();
+public class UdpApi {
+    private static final String TAG = UdpApi.class.getSimpleName();
     private DatagramSocket datagramSocket;
     private boolean isListenerUdp = true;
     private String groupIP = "224.1.1.1";
@@ -34,77 +40,116 @@ public class UdpClient {
     private String mDeviceIP;
 
 
-    public UdpClient() {
+    public UdpApi() {
     }
 
     /**
      * 发送组播
-     * @param data
+     * @param sendBuffer
      * @return
      */
-    public Observable sendUdpMulticast(final String data) {
+    public Observable sendUdpMulticast(final ByteBuffer sendBuffer) {
         Observable observable = Observable.create(new ObservableOnSubscribe() {
             @Override
             public void subscribe(ObservableEmitter emitter) throws Exception {
-                MulticastSocket socket;
-                socket = new MulticastSocket();
-                socket.setTimeToLive(1);
+                DatagramChannel datagramChannel = DatagramChannel.open();
+                datagramChannel.configureBlocking(false);
+                SocketAddress socketAddress = new InetSocketAddress(groupIP, groupPort);
+                datagramChannel.connect(socketAddress);
 
-                //设置超时时间
-                socket.setSoTimeout(RECEIVE_TIME_OUT);
+                Selector selector = Selector.open();
+                datagramChannel.register(selector, SelectionKey.OP_READ);
+                datagramChannel.write(sendBuffer);
 
-                String deviceIP = null;
-                InetAddress address = InetAddress.getByName(groupIP);
-                if (!address.isMulticastAddress()) {
-                    emitter.onError(new Throwable("不是组播地址"));
-                    emitter.onComplete();
-                }
+                while (selector.select() > 0) {
+                    Iterator iterator = selector.selectedKeys().iterator();
+                    while (iterator.hasNext()) {
+                        SelectionKey selectionKey = (SelectionKey) iterator.next();
+                        iterator.remove();
+                        if (selectionKey.isReadable()) {
 
-                socket.joinGroup(address);
-
-                byte[] sendDataBytes = new byte[1024];
-                DatagramPacket sendPacket = new DatagramPacket(sendDataBytes, sendDataBytes.length,
-                        address, DEVICE_FIND_PORT);
-
-                for (int i = 0; i < 3; i++) {
-                    //发送搜索广播
-                    byte packType = Constant.PACKET_TYPE_FIND_DEVICE_REQ_10;
-                    sendPacket.setData(UdpUtil.packData(i+1, packType, deviceIP));
-                    socket.send(sendPacket);
-
-                    byte[] receiveData = new byte[1024];
-                    DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                    try {
-                        int rspCount = RESPONSE_DEVICE_MAX;
-                        while (rspCount-- > 0) {
-                            receivePacket.setData(receiveData);
-                            socket.receive(receivePacket);
-                            if (receivePacket.getLength() > 0) {
-                                deviceIP = receivePacket.getAddress().getHostAddress();
-                                if (UdpUtil.parsePacket(receivePacket) != null) {
-                                    LogUtil.d(TAG, "Device is online: " + deviceIP);
-
-                                    //发送一对一的确认消息。使用接收报，因为接收报中有对方的实际IP
-                                    packType = Constant.PACKET_TYPE_FIND_DEVICE_CHK_12;
-                                    receivePacket.setData(UdpUtil.packData(rspCount, packType, deviceIP));
-                                    socket.send(receivePacket);
-                                }
-                            }
                         }
-                    } catch (SocketTimeoutException e) {
+
+                        if (selectionKey.isWritable()) {
+
+                        }
 
                     }
                 }
-
-                if (socket != null) {
-                    socket.close();
-                }
+//                MulticastSocket socket;
+//                socket = new MulticastSocket();
+//                socket.setTimeToLive(1);
+//
+//                //设置超时时间
+//                socket.setSoTimeout(RECEIVE_TIME_OUT);
+//
+//                String deviceIP = null;
+//                InetAddress address = InetAddress.getByName(groupIP);
+//                if (!address.isMulticastAddress()) {
+//                    emitter.onError(new Throwable("不是组播地址"));
+//                    emitter.onComplete();
+//                }
+//
+//                socket.joinGroup(address);
+//
+//                byte[] sendDataBytes = new byte[1024];
+//                DatagramPacket sendPacket = new DatagramPacket(sendDataBytes, sendDataBytes.length,
+//                        address, DEVICE_FIND_PORT);
+//
+//                for (int i = 0; i < 3; i++) {
+//                    //发送搜索广播
+//                    byte packType = Constant.PACKET_TYPE_FIND_DEVICE_REQ_10;
+//                    sendPacket.setData(UdpUtil.packData(i+1, packType, deviceIP));
+//                    socket.send(sendPacket);
+//
+//                    byte[] receiveData = new byte[1024];
+//                    DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+//                    try {
+//                        int rspCount = RESPONSE_DEVICE_MAX;
+//                        while (rspCount-- > 0) {
+//                            receivePacket.setData(receiveData);
+//                            socket.receive(receivePacket);
+//                            if (receivePacket.getLength() > 0) {
+//                                deviceIP = receivePacket.getAddress().getHostAddress();
+//                                if (UdpUtil.parsePacket(receivePacket) != null) {
+//                                    LogUtil.d(TAG, "Device is online: " + deviceIP);
+//
+//                                    //发送一对一的确认消息。使用接收报，因为接收报中有对方的实际IP
+//                                    packType = Constant.PACKET_TYPE_FIND_DEVICE_CHK_12;
+//                                    receivePacket.setData(UdpUtil.packData(rspCount, packType, deviceIP));
+//                                    socket.send(receivePacket);
+//                                }
+//                            }
+//                        }
+//                    } catch (SocketTimeoutException e) {
+//
+//                    }
+//                }
+//
+//                if (socket != null) {
+//                    socket.close();
+//                }
             }
         });
         return observable;
     }
 
+    public Observable<ByteBuffer> registerUdpMulticast() {
+        Observable<ByteBuffer> observable = Observable.create(new ObservableOnSubscribe<ByteBuffer>() {
+            @Override
+            public void subscribe(ObservableEmitter<ByteBuffer> emitter) throws Exception {
+                NetworkInterface networkInterface = NetworkInterface.getByName("eth1");
+                InetSocketAddress socketAddress = new InetSocketAddress(groupPort);
+                DatagramChannel datagramChannel = DatagramChannel.open(StandardProtocolFamily.INET)
+                        .setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                        .bind(socketAddress)
+                        .setOption(StandardSocketOptions.IP_MULTICAST_IF, networkInterface);
 
+                InetAddress inetAddress = InetAddress.getByName(groupIP);
+            }
+        });
+        return observable;
+     }
 
 
 

@@ -5,7 +5,7 @@ import android.content.Context;
 
 import com.example.yechy.tvass.HomeActivity;
 import com.example.yechy.tvass.injector.module.ActivityModule;
-import com.example.yechy.tvass.injector.scope.ContextLife;
+import com.example.yechy.tvass.injector.qualifier.ContextLife;
 import com.example.yechy.tvass.injector.scope.PerActivity;
 
 import dagger.Component;

@@ -1,7 +1,11 @@
 package com.example.yechy.tvass.communication;
 
-import com.example.yechy.tvass.communication.net.TcpClient;
-import com.example.yechy.tvass.communication.net.UdpClient;
+import com.example.yechy.tvass.communication.net.TcpApi;
+import com.example.yechy.tvass.communication.net.UdpApi;
+import com.example.yechy.tvass.flatbuffers.SocketMsgType;
+import com.example.yechy.tvass.util.FlatUtil;
+
+import java.nio.ByteBuffer;
 
 import io.reactivex.Observable;
 
@@ -11,12 +15,13 @@ import io.reactivex.Observable;
 
 public class CommModel implements ICommModel {
     private int mode = Constant.COMMUNICATION_MODE_WIFI;
-    private TcpClient tcpClient;
-    private UdpClient udpClient;
+    private static final String HEAD = "TVA";
+    private TcpApi tcpApi;
+    private UdpApi udpApi;
 
-    public CommModel(TcpClient tcpClient, UdpClient udpClient) {
-        this.tcpClient = tcpClient;
-        this.udpClient = udpClient;
+    public CommModel(TcpApi tcpApi, UdpApi udpApi) {
+        this.tcpApi = tcpApi;
+        this.udpApi = udpApi;
     }
 
     /**
@@ -24,11 +29,13 @@ public class CommModel implements ICommModel {
      * @return
      */
     @Override
-    public Observable searchDevice() {
+    public Observable searchDevice(int ip) {
         Observable observable = null;
 
         if (mode == Constant.COMMUNICATION_MODE_WIFI) {
-            observable = udpClient.sendUdpMulticast("");
+            ByteBuffer byteBuffer = FlatUtil.createSocketMessage(HEAD,
+                    SocketMsgType.MESSAGE_TYPE_FIND_DEVICE_REQUEST, 1);
+            observable = udpApi.sendUdpMulticast(byteBuffer);
 
         } else if (mode == Constant.COMMUNICATION_MODE_BLUETOOTH) {
 
@@ -46,7 +53,7 @@ public class CommModel implements ICommModel {
     public Observable connectDevice(String ip, int port) {
         Observable observable = null;
         if (mode == Constant.COMMUNICATION_MODE_WIFI) {
-            tcpClient.connectDevice(ip, port);
+            tcpApi.connectDevice(ip, port);
 
         } else if (mode == Constant.COMMUNICATION_MODE_BLUETOOTH) {
 
@@ -64,7 +71,7 @@ public class CommModel implements ICommModel {
         Observable observable = null;
 
         if (mode == Constant.COMMUNICATION_MODE_WIFI) {
-            tcpClient.sendAndReceiveData(new byte[1]);
+            tcpApi.sendAndReceiveData(new byte[1]);
 
         } else if (mode == Constant.COMMUNICATION_MODE_BLUETOOTH) {
 

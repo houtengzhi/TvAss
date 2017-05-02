@@ -3,7 +3,7 @@ package com.example.yechy.tvass.injector.module;
 import android.app.Service;
 import android.content.Context;
 
-import com.example.yechy.tvass.injector.scope.ContextLife;
+import com.example.yechy.tvass.injector.qualifier.ContextLife;
 import com.example.yechy.tvass.injector.scope.PerService;
 
 import dagger.Module;

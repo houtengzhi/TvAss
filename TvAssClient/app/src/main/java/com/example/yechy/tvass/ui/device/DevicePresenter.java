@@ -1,7 +1,8 @@
 package com.example.yechy.tvass.ui.device;
 
 import com.example.yechy.tvass.base.BaseRxPresenter;
-import com.example.yechy.tvass.communication.net.UdpClient;
+import com.example.yechy.tvass.communication.ICommModel;
+import com.example.yechy.tvass.communication.net.UdpApi;
 
 import java.net.DatagramPacket;
 
@@ -19,11 +20,12 @@ import io.reactivex.schedulers.Schedulers;
 
 public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
         implements DeviceContract.IPresenetr<DeviceContract.IView> {
-    private UdpClient udpModel;
+    private UdpApi udpModel;
+    private ICommModel commModel;
 
     @Inject
-    public DevicePresenter() {
-        udpModel = new UdpClient();
+    public DevicePresenter(ICommModel commModel) {
+        this.commModel = commModel;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
 
     @Override
     public void searchDevices() {
-        Disposable disposable = udpModel.sendUdpMulticast("")
+        Disposable disposable = commModel.searchDevice(1)
                 .subscribeOn(Schedulers.io())
                 .subscribe();
         addSubscribe(disposable);
