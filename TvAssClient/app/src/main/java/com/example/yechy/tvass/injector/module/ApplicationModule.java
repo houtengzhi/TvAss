@@ -3,7 +3,11 @@ package com.example.yechy.tvass.injector.module;
 import android.content.Context;
 
 import com.example.yechy.tvass.App;
-import com.example.yechy.tvass.injector.scope.ContextLife;
+import com.example.yechy.tvass.communication.CommModel;
+import com.example.yechy.tvass.communication.ICommModel;
+import com.example.yechy.tvass.communication.net.TcpApi;
+import com.example.yechy.tvass.communication.net.UdpApi;
+import com.example.yechy.tvass.injector.qualifier.ContextLife;
 
 import javax.inject.Singleton;
 
@@ -32,5 +36,11 @@ public class ApplicationModule {
     @Singleton
     public App provideApplication() {
         return app;
+    }
+
+    @Provides
+    @Singleton
+    ICommModel provideCommModel(TcpApi tcpApi, UdpApi udpApi) {
+        return new CommModel(tcpApi, udpApi);
     }
 }
