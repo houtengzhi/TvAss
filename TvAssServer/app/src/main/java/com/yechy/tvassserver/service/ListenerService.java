@@ -1,14 +1,25 @@
 package com.yechy.tvassserver.service;
 
-import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+
+import com.yechy.tvassserver.base.BaseRxService;
+import com.yechy.tvassserver.util.L;
 
 /**
  * Created by yechy on 2017/4/22.
  */
 
-public class ListenerService extends Service {
+public class ListenerService extends BaseRxService<ListenerServicePresenter>
+        implements ListenerServiceContract.IView {
+
+    private static final String TAG = ListenerService.class.getSimpleName();
+
+    @Override
+    protected void initInject() {
+        getServiceComponent().inject(this);
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -17,6 +28,9 @@ public class ListenerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        L.d(TAG, "onCreate()");
+        mPresenter.registerUdpMulticast();
+        mPresenter.registerTcpMessage();
     }
 
     @Override
@@ -28,4 +42,6 @@ public class ListenerService extends Service {
     public void onDestroy() {
         super.onDestroy();
     }
+
+
 }

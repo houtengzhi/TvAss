@@ -1,18 +1,19 @@
 package com.example.yechy.tvass.ui.device;
 
 import com.example.yechy.tvass.base.BaseRxPresenter;
-import com.example.yechy.tvass.communication.ICommModel;
-import com.example.yechy.tvass.communication.net.UdpApi;
+import com.example.yechy.tvass.communication.CommModel;
+import com.example.yechy.tvass.model.DeviceManager;
+import com.example.yechy.tvass.model.bean.Device;
+import com.example.yechy.tvass.util.L;
+import com.example.yechy.tvass.util.LogUtil;
+import com.example.yechy.tvass.util.RxUtil;
 
-import java.net.DatagramPacket;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
  * Created by yechy on 2017/4/8.
@@ -20,33 +21,114 @@ import io.reactivex.schedulers.Schedulers;
 
 public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
         implements DeviceContract.IPresenetr<DeviceContract.IView> {
-    private UdpApi udpModel;
-    private ICommModel commModel;
+    private static final String TAG= DevicePresenter.class.getSimpleName();
+
+    private CommModel commModel;
 
     @Inject
-    public DevicePresenter(ICommModel commModel) {
+    public DevicePresenter(CommModel commModel) {
         this.commModel = commModel;
     }
 
     @Override
-    public void setDevicesListener() {
-        Disposable disposable = udpModel.receiveUdpMulticast(1024)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<DatagramPacket>() {
+    public void startSearchDevices() {
+        L.d(TAG, "startSearchDevices()");
+        DeviceManager.getInstance().removeAllDevices();
+        Disposable disposable = commModel.startSearchDevice()
+                .compose(RxUtil.<Device>rxSchedulerHelper())
+                .subscribeWith(new ResourceSubscriber<Device>() {
                     @Override
-                    public void accept(@NonNull DatagramPacket datagramPacket) throws Exception {
-                        datagramPacket.getData();
+                    public void onNext(Device device) {
+                        L.d(TAG, " " + device.toString());
+                        DeviceManager.getInstance().addDevice(device);
+                        mView.refreshDeviceRecyclerView((ArrayList<Device>) DeviceManager
+                                .getInstance().getmDeviceList());
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        t.printStackTrace();
+                        LogUtil.e(TAG, t.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
         addSubscribe(disposable);
     }
 
     @Override
-    public void searchDevices() {
-        Disposable disposable = commModel.searchDevice(1)
-                .subscribeOn(Schedulers.io())
-                .subscribe();
+    public void stopSearchDevices() {
+        L.d(TAG, "stopSearchDevices()");
+        Disposable disposable = commModel.stopSearchDevice()
+                .compose(RxUtil.<Boolean>rxSchedulerHelper())
+                .subscribeWith(new ResourceSubscriber<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        t.printStackTrace();
+                        LogUtil.e(TAG, t.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
         addSubscribe(disposable);
+    }
+
+    @Override
+    public void connectDevice(String ip, int port) {
+        L.d(TAG, "connectDevice(), ip = " + ip + ", port = " + port);
+        Disposable disposable = commModel.connectDevice(ip, port)
+                .compose(RxUtil.<Boolean>rxSchedulerHelper())
+                .subscribeWith(new ResourceSubscriber<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+        addSubscribe(disposable);
+    }
+
+    @Override
+    public void sendKeyCode(int keyCode, byte keyStatus) {
+        L.d(TAG, "sendKeyCode(), keyCode = " + keyCode + ", keyStatus = " + keyStatus);
+        Disposable disposable = commModel.sendKeyCode(keyCode, keyStatus)
+                .compose(RxUtil.<Boolean>rxSchedulerHelper())
+                .subscribeWith(new ResourceSubscriber<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+                addSubscribe(disposable);
     }
 }

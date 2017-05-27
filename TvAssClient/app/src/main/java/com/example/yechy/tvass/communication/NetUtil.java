@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.example.yechy.tvass.structure.DeviceInfo;
+import com.example.yechy.tvass.model.bean.DeviceInfo;
 import com.example.yechy.tvass.util.ConfigConst;
 
 import java.io.ByteArrayInputStream;

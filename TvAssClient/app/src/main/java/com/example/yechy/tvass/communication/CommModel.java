@@ -1,46 +1,64 @@
 package com.example.yechy.tvass.communication;
 
 import com.example.yechy.tvass.communication.net.TcpApi;
-import com.example.yechy.tvass.communication.net.UdpApi;
-import com.example.yechy.tvass.flatbuffers.SocketMsgType;
-import com.example.yechy.tvass.util.FlatUtil;
+import com.example.yechy.tvass.communication.net.UdpClient;
+import com.example.yechy.tvass.flatbuffers.FlatUtil;
+import com.example.yechy.tvass.flatbuffers.TcpMsgType;
+import com.example.yechy.tvass.flatbuffers.TcpResponse;
+import com.example.yechy.tvass.model.bean.Device;
+import com.example.yechy.tvass.model.prefs.IPreferencesHelper;
 
-import java.nio.ByteBuffer;
+import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
 
 /**
  * Created by yechy on 2017/4/22.
  */
 
 public class CommModel implements ICommModel {
-    private int mode = Constant.COMMUNICATION_MODE_WIFI;
-    private static final String HEAD = "TVA";
+    private int mode;
     private TcpApi tcpApi;
-    private UdpApi udpApi;
+    private UdpClient udpClient;
+    private IPreferencesHelper mPreferencesHelper;
 
-    public CommModel(TcpApi tcpApi, UdpApi udpApi) {
+
+    @Inject
+    public CommModel(TcpApi tcpApi, UdpClient udpClient, IPreferencesHelper preferencesHelper) {
         this.tcpApi = tcpApi;
-        this.udpApi = udpApi;
+        this.udpClient = udpClient;
+        this.mPreferencesHelper = preferencesHelper;
+        mode = mPreferencesHelper.getCommunicationMode();
     }
 
     /**
-     * 搜索设备
+     * 开始搜索设备
      * @return
      */
     @Override
-    public Observable searchDevice(int ip) {
-        Observable observable = null;
-
+    public Flowable<Device> startSearchDevice() {
         if (mode == Constant.COMMUNICATION_MODE_WIFI) {
-            ByteBuffer byteBuffer = FlatUtil.createSocketMessage(HEAD,
-                    SocketMsgType.MESSAGE_TYPE_FIND_DEVICE_REQUEST, 1);
-            observable = udpApi.sendUdpMulticast(byteBuffer);
+            return udpClient.sendSearchMulticast();
 
         } else if (mode == Constant.COMMUNICATION_MODE_BLUETOOTH) {
-
         }
-        return observable;
+        return null;
+    }
+
+    /**
+     * 停止搜索设备
+     * @return
+     */
+    @Override
+    public Flowable<Boolean> stopSearchDevice() {
+        if (mode == Constant.COMMUNICATION_MODE_WIFI) {
+            return udpClient.closeUdpSocket();
+
+        } else if (mode == Constant.COMMUNICATION_MODE_BLUETOOTH) {
+        }
+        return null;
     }
 
     /**
@@ -50,32 +68,54 @@ public class CommModel implements ICommModel {
      * @return
      */
     @Override
-    public Observable connectDevice(String ip, int port) {
-        Observable observable = null;
+    public Flowable<Boolean> connectDevice(String ip, int port) {
         if (mode == Constant.COMMUNICATION_MODE_WIFI) {
-            tcpApi.connectDevice(ip, port);
+           return tcpApi.connectDevice(ip, port);
 
         } else if (mode == Constant.COMMUNICATION_MODE_BLUETOOTH) {
 
         }
-        return observable;
+        return null;
+    }
+
+    @Override
+    public Flowable<Boolean> disconnectDevice() {
+        if (mode == Constant.COMMUNICATION_MODE_WIFI) {
+            return tcpApi.disconnectDevice();
+        } else if (mode == Constant.COMMUNICATION_MODE_BLUETOOTH) {
+
+        }
+        return null;
     }
 
     /**
      * 发送键值
+     *
      * @param keyCode
      * @return
      */
     @Override
-    public Observable sendKeyCode(int keyCode) {
-        Observable observable = null;
-
+    public Flowable<Boolean> sendKeyCode(int keyCode, byte keyStatus) {
+        byte[] bytes = FlatUtil.createTcpMessageBytes(TcpMsgType.MESSAGE_TYPE_ONKEY_REQUEST,
+                (short) keyCode, keyStatus);
         if (mode == Constant.COMMUNICATION_MODE_WIFI) {
-            tcpApi.sendAndReceiveData(new byte[1]);
+           return tcpApi.sendAndReceiveData(bytes)
+                   .map(new Function<byte[], Boolean>() {
+                       @Override
+                       public Boolean apply(@NonNull byte[] bytes) throws Exception {
+                           if (bytes != null) {
+                               TcpResponse tcpResponse = FlatUtil.getTcpResponse(bytes);
+                               if (tcpResponse.msgType() == TcpMsgType.MESSAGE_TYPE_ONKEY_RESPONSE) {
+                                   return tcpResponse.responseCode() == 0;
+                               }
+                           }
+                           return false;
+                       }
+                   });
 
         } else if (mode == Constant.COMMUNICATION_MODE_BLUETOOTH) {
 
         }
-        return observable;
+        return null;
     }
 }

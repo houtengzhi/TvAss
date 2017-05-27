@@ -2,10 +2,11 @@ package com.example.yechy.tvass.injector.component;
 
 import android.content.Context;
 
-import com.example.yechy.tvass.communication.ICommModel;
+import com.example.yechy.tvass.communication.CommModel;
 import com.example.yechy.tvass.injector.module.ApplicationModule;
 import com.example.yechy.tvass.injector.module.CommModule;
 import com.example.yechy.tvass.injector.qualifier.ContextLife;
+import com.example.yechy.tvass.model.prefs.PreferencesHelperImpl;
 
 import javax.inject.Singleton;
 
@@ -21,5 +22,7 @@ public interface ApplicationComponent {
     @ContextLife
     Context getContext();
 
-    ICommModel getCommModel();
+    CommModel getCommModel();
+
+    PreferencesHelperImpl getPreferencesHelperImpl();
 }

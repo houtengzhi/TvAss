@@ -6,8 +6,10 @@ import com.example.yechy.tvass.App;
 import com.example.yechy.tvass.communication.CommModel;
 import com.example.yechy.tvass.communication.ICommModel;
 import com.example.yechy.tvass.communication.net.TcpApi;
-import com.example.yechy.tvass.communication.net.UdpApi;
+import com.example.yechy.tvass.communication.net.UdpClient;
 import com.example.yechy.tvass.injector.qualifier.ContextLife;
+import com.example.yechy.tvass.model.prefs.IPreferencesHelper;
+import com.example.yechy.tvass.model.prefs.PreferencesHelperImpl;
 
 import javax.inject.Singleton;
 
@@ -40,7 +42,13 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    ICommModel provideCommModel(TcpApi tcpApi, UdpApi udpApi) {
-        return new CommModel(tcpApi, udpApi);
+    ICommModel provideCommModel(TcpApi tcpApi, UdpClient udpClient, IPreferencesHelper preferencesHelper) {
+        return new CommModel(tcpApi, udpClient, preferencesHelper);
+    }
+
+    @Provides
+    @Singleton
+    IPreferencesHelper providePreferencesHelper(PreferencesHelperImpl preferencesHelperImpl) {
+        return preferencesHelperImpl;
     }
 }

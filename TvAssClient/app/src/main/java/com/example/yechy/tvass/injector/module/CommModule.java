@@ -1,7 +1,7 @@
 package com.example.yechy.tvass.injector.module;
 
 import com.example.yechy.tvass.communication.net.TcpApi;
-import com.example.yechy.tvass.communication.net.UdpApi;
+import com.example.yechy.tvass.communication.net.UdpClient;
 
 import javax.inject.Singleton;
 
@@ -26,8 +26,8 @@ public class CommModule {
 
     @Provides
     @Singleton
-    UdpApi provideUdpApi() {
-        return new UdpApi();
+    UdpClient provideUdpApi() {
+        return new UdpClient();
     }
 
 

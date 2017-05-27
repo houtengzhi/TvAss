@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.example.yechy.tvass.R;
 import com.example.yechy.tvass.communication.NetUtil;
-import com.example.yechy.tvass.structure.DeviceInfo;
+import com.example.yechy.tvass.model.bean.DeviceInfo;
 
 import java.util.ArrayList;
 import java.util.List;

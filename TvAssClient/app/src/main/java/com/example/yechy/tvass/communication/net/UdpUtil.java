@@ -1,7 +1,7 @@
 package com.example.yechy.tvass.communication.net;
 
 import com.example.yechy.tvass.communication.Constant;
-import com.example.yechy.tvass.structure.DeviceBean;
+import com.example.yechy.tvass.model.bean.Device;
 
 import java.net.DatagramPacket;
 import java.nio.charset.Charset;
@@ -52,7 +52,7 @@ public class UdpUtil {
      * @param packet
      * @return
      */
-    public static DeviceBean parsePacket(DatagramPacket packet) {
+    public static Device parsePacket(DatagramPacket packet) {
         if (packet == null || packet.getAddress() == null) {
             return null;
         }
@@ -64,7 +64,7 @@ public class UdpUtil {
         byte packType;
         byte type;
         int len;
-        DeviceBean deviceBean = null;
+        Device deviceBean = null;
 
         if (dataLen < 2) {
             return null;
@@ -96,7 +96,7 @@ public class UdpUtil {
             switch (type) {
                 case Constant.PACKET_DATA_TYPE_DEVICE_NAME:
                     String name = new String(data, offset, len, Charset.forName("UTF-8"));
-                    deviceBean = new DeviceBean();
+                    deviceBean = new Device();
                     deviceBean.setName(name);
                     deviceBean.setIp(ip);
                     deviceBean.setPort(port);
