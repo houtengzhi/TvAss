@@ -12,6 +12,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by yechy on 2017/4/22.
@@ -31,6 +32,7 @@ public class TcpApi {
     }
 
     public Flowable<byte[]> registerTcpMessage(final int port) {
+        L.d(TAG, "registerTcpMessage()");
         return Flowable.create(new FlowableOnSubscribe<byte[]>() {
             @Override
             public void subscribe(FlowableEmitter<byte[]> emitter) throws Exception {
@@ -43,62 +45,74 @@ public class TcpApi {
                     L.d(TAG, "Waiting for host to connect...");
                     mSocket = mServerSocket.accept();
                     if (mSocket.isConnected()) {
-                        mSocket.setSoTimeout(INPUTSTREAM_READ_TIMEOUT);
+//                        mSocket.setSoTimeout(INPUTSTREAM_READ_TIMEOUT);
                         mInputStream = mSocket.getInputStream();
                         mOutputStream = mSocket.getOutputStream();
                         while (mSocket != null && mSocket.isConnected()) {
-                            //读取流
-                            emitter.onNext(readData());
+                            try {
+                                //读取流
+                                emitter.onNext(readTcpData());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                L.d(TAG, e.getMessage());
+                                break;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                L.d(TAG, e.getMessage());
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }, BackpressureStrategy.BUFFER);
+        }, BackpressureStrategy.ERROR)
+                .subscribeOn(Schedulers.io());
     }
 
     /**
      * @param dataBytes
      * @return
      */
-    public Flowable<Boolean> sendTcpData(final byte[] dataBytes) {
+    public Flowable<Boolean> sendTcpMessage(final byte[] dataBytes) {
+        L.d(TAG, "sendTcpMessage()");
         return Flowable.create(new FlowableOnSubscribe<Boolean>() {
             @Override
             public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
-                emitter.onNext(sendData(dataBytes));
+                emitter.onNext(sendTcpData(dataBytes));
             }
-        }, BackpressureStrategy.BUFFER);
+        }, BackpressureStrategy.ERROR)
+                .subscribeOn(Schedulers.io());
     }
 
-    private boolean sendData(byte[] data) {
+    private boolean sendTcpData(byte[] data) throws IOException {
+        L.d(TAG, "sendTcpData()");
         if (mSocket != null && mSocket.isConnected() && mOutputStream != null) {
-            try {
-                mOutputStream.write(data);
-                mOutputStream.flush();
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            L.d(TAG, "sendTcpData(), Ready to send data...");
+            mOutputStream.write(data);
+            mOutputStream.flush();
+            return true;
         }
         return false;
     }
 
-    private byte[] readData() {
-        L.d(TAG, "readData()");
-        byte[] data = new byte[0];
-        byte[] buf = new byte[1024];
-        int len;
-        try {
-            L.d(TAG, "Waiting to read data...");
+    private byte[] readTcpData() throws Exception {
+        L.d(TAG, "readTcpData()");
+        if (mSocket != null && mSocket.isConnected() && mInputStream != null) {
+            byte[] data = new byte[0];
+            byte[] buf = new byte[1024];
+            int len;
+            L.d(TAG, "readTcpData(), Waiting to read data...");
             while ((len = mInputStream.read(buf)) != -1) {
                 byte[] temp = new byte[data.length + len];
                 System.arraycopy(data, 0, temp, 0, data.length);
                 System.arraycopy(buf, 0, temp, data.length, len);
                 data = temp;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            return data;
+        } else {
+            throw new Exception("Socket is null or disconnect");
         }
-        return data;
+
     }
 
     private void closeSocket() {

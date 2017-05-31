@@ -58,6 +58,9 @@ dependencies {
     //buffer
     compile 'com.github.davidmoten:flatbuffers-java:1.6.0.3'
 
+    //google工具库
+    compile 'com.google.code.gson:gson:2.6.1'
+
     //other
     compile 'com.orhanobut:logger:1.15'
 

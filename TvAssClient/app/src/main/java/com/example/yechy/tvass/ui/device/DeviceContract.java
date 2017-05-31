@@ -12,12 +12,17 @@ import java.util.ArrayList;
 public interface DeviceContract {
     interface IView extends BaseContract.IView {
         void refreshDeviceRecyclerView(ArrayList<Device> deviceArrayList);
+        void setSearchButtonClickable(boolean isClickable);
     }
 
     interface IPresenetr<T> extends BaseContract.IPresenter<T> {
+        void registerSearchMessage();
+        void clearDeviceList();
         void startSearchDevices();
         void stopSearchDevices();
-        void connectDevice(String ip, int port);
+
+        void connectDevice(Device device, int port);
+        void disconnectDevice();
         void sendKeyCode(int keyCode, byte keyStatus);
     }
 }

@@ -7,5 +7,5 @@ package com.example.yechy.tvass.util;
 public class AppConfig {
     public static final String MULTICAST_IP = "224.1.1.1";
     public static final int MULTICAST_PORT = 9000;
-    public static final int TCP_PORT = 9001;
+    public static final int TCP_PORT = 9000;
 }

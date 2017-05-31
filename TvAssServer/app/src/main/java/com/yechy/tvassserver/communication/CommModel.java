@@ -12,7 +12,6 @@ import java.net.DatagramPacket;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
 /**
@@ -43,7 +42,7 @@ public class CommModel implements ICommModel {
         return tcpApi.registerTcpMessage(port)
                 .map(new Function<byte[], TcpMessage>() {
                     @Override
-                    public TcpMessage apply(@NonNull byte[] bytes) throws Exception {
+                    public TcpMessage apply(byte[] bytes) throws Exception {
                         TcpMessage tcpMessage = FlatUtil.getTcpMessage(bytes);
                         return tcpMessage;
                     }
@@ -54,6 +53,6 @@ public class CommModel implements ICommModel {
     @Override
     public Flowable<Boolean> sendTcpData(byte[] sendBytes) {
         L.d(TAG, "sendTcpData()");
-        return tcpApi.sendTcpData(sendBytes);
+        return tcpApi.sendTcpMessage(sendBytes);
     }
 }

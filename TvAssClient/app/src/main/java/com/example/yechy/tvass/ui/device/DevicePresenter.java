@@ -2,17 +2,24 @@ package com.example.yechy.tvass.ui.device;
 
 import com.example.yechy.tvass.base.BaseRxPresenter;
 import com.example.yechy.tvass.communication.CommModel;
+import com.example.yechy.tvass.communication.net.INetModel;
+import com.example.yechy.tvass.communication.net.NetModel;
 import com.example.yechy.tvass.model.DeviceManager;
 import com.example.yechy.tvass.model.bean.Device;
+import com.example.yechy.tvass.util.AppCookie;
 import com.example.yechy.tvass.util.L;
 import com.example.yechy.tvass.util.LogUtil;
-import com.example.yechy.tvass.util.RxUtil;
+
+import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -24,18 +31,21 @@ public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
     private static final String TAG= DevicePresenter.class.getSimpleName();
 
     private CommModel commModel;
+    private INetModel netModel;
+    private AppCookie appCookie;
+    private Disposable searchDisposable;
 
     @Inject
-    public DevicePresenter(CommModel commModel) {
+    public DevicePresenter(CommModel commModel, NetModel netModel, AppCookie appCookie) {
         this.commModel = commModel;
+        this.netModel = netModel;
+        this.appCookie = appCookie;
     }
 
     @Override
-    public void startSearchDevices() {
-        L.d(TAG, "startSearchDevices()");
-        DeviceManager.getInstance().removeAllDevices();
-        Disposable disposable = commModel.startSearchDevice()
-                .compose(RxUtil.<Device>rxSchedulerHelper())
+    public void registerSearchMessage() {
+        Disposable disposable = netModel.registerSearchMessage()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new ResourceSubscriber<Device>() {
                     @Override
                     public void onNext(Device device) {
@@ -60,10 +70,28 @@ public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
     }
 
     @Override
-    public void stopSearchDevices() {
-        L.d(TAG, "stopSearchDevices()");
-        Disposable disposable = commModel.stopSearchDevice()
-                .compose(RxUtil.<Boolean>rxSchedulerHelper())
+    public void clearDeviceList() {
+        L.d(TAG, "clearDeviceList()");
+        DeviceManager.getInstance().removeAllDevices();
+        mView.refreshDeviceRecyclerView((ArrayList<Device>) DeviceManager
+                .getInstance().getmDeviceList());
+    }
+
+    @Override
+    public void startSearchDevices() {
+        L.d(TAG, "startSearchDevices()");
+        if (searchDisposable != null && !searchDisposable.isDisposed()) {
+            searchDisposable.dispose();
+        }
+        searchDisposable = netModel.startSearchDevice()
+                .doOnSubscribe(new Consumer<Subscription>() {
+                    @Override
+                    public void accept(@NonNull Subscription subscription) throws Exception {
+                        mView.setSearchButtonClickable(false);
+                    }
+                })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new ResourceSubscriber<Boolean>() {
                     @Override
                     public void onNext(Boolean aBoolean) {
@@ -72,8 +100,48 @@ public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
 
                     @Override
                     public void onError(Throwable t) {
-                        t.printStackTrace();
-                        LogUtil.e(TAG, t.getMessage());
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mView.setSearchButtonClickable(true);
+                    }
+                });
+        addSubscribe(searchDisposable);
+    }
+
+    @Override
+    public void stopSearchDevices() {
+        L.d(TAG, "stopSearchDevices()");
+        Disposable disposable = netModel.closeUdpSocket()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean aBoolean) throws Exception {
+
+                    }
+                });
+        addSubscribe(disposable);
+    }
+
+    @Override
+    public void connectDevice(final Device device, int port) {
+        L.d(TAG, "connectDevice(), device = " + device.toString() + ", port = " + port);
+        Disposable disposable =netModel.connectDevice(device.getIp(), port)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new ResourceSubscriber<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                       appCookie.setConnect(aBoolean.booleanValue());
+                        if (aBoolean.booleanValue()) {
+                            appCookie.saveConnectedDeviceInfo(device);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
                     }
 
                     @Override
@@ -85,10 +153,9 @@ public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
     }
 
     @Override
-    public void connectDevice(String ip, int port) {
-        L.d(TAG, "connectDevice(), ip = " + ip + ", port = " + port);
-        Disposable disposable = commModel.connectDevice(ip, port)
-                .compose(RxUtil.<Boolean>rxSchedulerHelper())
+    public void disconnectDevice() {
+        Disposable disposable = netModel.disconnectDevice()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new ResourceSubscriber<Boolean>() {
                     @Override
                     public void onNext(Boolean aBoolean) {
@@ -111,8 +178,8 @@ public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
     @Override
     public void sendKeyCode(int keyCode, byte keyStatus) {
         L.d(TAG, "sendKeyCode(), keyCode = " + keyCode + ", keyStatus = " + keyStatus);
-        Disposable disposable = commModel.sendKeyCode(keyCode, keyStatus)
-                .compose(RxUtil.<Boolean>rxSchedulerHelper())
+        Disposable disposable = netModel.sendKeyCode(keyCode, keyStatus)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new ResourceSubscriber<Boolean>() {
                     @Override
                     public void onNext(Boolean aBoolean) {

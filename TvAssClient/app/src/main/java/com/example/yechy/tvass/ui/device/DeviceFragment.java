@@ -52,7 +52,6 @@ public class DeviceFragment extends BaseRVFragment<DevicePresenter> implements D
 
     @Override
     public void initDatas() {
-
     }
 
     @Override
@@ -102,6 +101,7 @@ public class DeviceFragment extends BaseRVFragment<DevicePresenter> implements D
     public void onStart() {
         super.onStart();
         L.d(TAG, "onStart()");
+        mPresenter.registerSearchMessage();
     }
 
     @Override
@@ -139,15 +139,13 @@ public class DeviceFragment extends BaseRVFragment<DevicePresenter> implements D
             public void onItemClick(View view, int position, Object object) {
                 L.d(TAG, "onItemClick()");
                 Device device = (Device) object;
-                mPresenter.connectDevice(device.getIp(), AppConfig.TCP_PORT);
+                mPresenter.connectDevice(device, AppConfig.TCP_PORT);
             }
         });
     }
 
     public static DeviceFragment newInstance() {
-
         Bundle args = new Bundle();
-
         DeviceFragment fragment = new DeviceFragment();
         fragment.setArguments(args);
         return fragment;
@@ -159,6 +157,7 @@ public class DeviceFragment extends BaseRVFragment<DevicePresenter> implements D
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(@NonNull Object o) throws Exception {
+                        mPresenter.clearDeviceList();
                         mPresenter.startSearchDevices();
                     }
                 });
@@ -168,6 +167,13 @@ public class DeviceFragment extends BaseRVFragment<DevicePresenter> implements D
 
     @Override
     public void refreshDeviceRecyclerView(ArrayList<Device> deviceArrayList) {
+        L.d(TAG, "refreshDeviceRecyclerView()");
         mDeviceAdapter.refreshData(deviceArrayList);
+    }
+
+    @Override
+    public void setSearchButtonClickable(boolean isClickable) {
+        L.d(TAG, "setSearchButtonClickable(), isClickable = " + isClickable);
+        btnDeviceSearch.setClickable(isClickable);
     }
 }

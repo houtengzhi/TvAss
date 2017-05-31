@@ -95,11 +95,11 @@ public class FlatUtil {
         L.d(TAG, "createTcpResponseBytes(), msgType = " + msgType + ", responseCode = " + responseCode
         + ", content length = " + content.length);
         FlatBufferBuilder builder = new FlatBufferBuilder(1);
+        int contentOffset = TcpResponse.createMsgContentVector(builder, content);
+        
         TcpResponse.startTcpResponse(builder);
         TcpResponse.addMsgType(builder, msgType);
         TcpResponse.addResponseCode(builder, responseCode);
-
-        int contentOffset = TcpResponse.createMsgContentVector(builder, content);
         TcpResponse.addMsgContent(builder, contentOffset);
 
         builder.finish(TcpResponse.endTcpResponse(builder));

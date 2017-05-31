@@ -5,11 +5,14 @@ import android.content.Context;
 import com.example.yechy.tvass.App;
 import com.example.yechy.tvass.communication.CommModel;
 import com.example.yechy.tvass.communication.ICommModel;
-import com.example.yechy.tvass.communication.net.TcpApi;
+import com.example.yechy.tvass.communication.net.INetModel;
+import com.example.yechy.tvass.communication.net.NetModel;
+import com.example.yechy.tvass.communication.net.TcpClient;
 import com.example.yechy.tvass.communication.net.UdpClient;
 import com.example.yechy.tvass.injector.qualifier.ContextLife;
 import com.example.yechy.tvass.model.prefs.IPreferencesHelper;
 import com.example.yechy.tvass.model.prefs.PreferencesHelperImpl;
+import com.example.yechy.tvass.util.AppCookie;
 
 import javax.inject.Singleton;
 
@@ -42,13 +45,25 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    ICommModel provideCommModel(TcpApi tcpApi, UdpClient udpClient, IPreferencesHelper preferencesHelper) {
-        return new CommModel(tcpApi, udpClient, preferencesHelper);
+    ICommModel provideCommModel(TcpClient tcpClient, UdpClient udpClient, IPreferencesHelper preferencesHelper) {
+        return new CommModel(tcpClient, udpClient, preferencesHelper);
+    }
+
+    @Provides
+    @Singleton
+    INetModel provideNetModel(UdpClient udpClient, TcpClient tcpClient) {
+        return new NetModel(udpClient, tcpClient);
     }
 
     @Provides
     @Singleton
     IPreferencesHelper providePreferencesHelper(PreferencesHelperImpl preferencesHelperImpl) {
         return preferencesHelperImpl;
+    }
+
+    @Provides
+    @Singleton
+    AppCookie provideAppCookie(IPreferencesHelper preferencesHelper) {
+        return new AppCookie(preferencesHelper);
     }
 }

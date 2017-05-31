@@ -3,10 +3,12 @@ package com.example.yechy.tvass.injector.component;
 import android.content.Context;
 
 import com.example.yechy.tvass.communication.CommModel;
+import com.example.yechy.tvass.communication.net.NetModel;
 import com.example.yechy.tvass.injector.module.ApplicationModule;
 import com.example.yechy.tvass.injector.module.CommModule;
 import com.example.yechy.tvass.injector.qualifier.ContextLife;
 import com.example.yechy.tvass.model.prefs.PreferencesHelperImpl;
+import com.example.yechy.tvass.util.AppCookie;
 
 import javax.inject.Singleton;
 
@@ -24,5 +26,9 @@ public interface ApplicationComponent {
 
     CommModel getCommModel();
 
+    NetModel getNetModel();
+
     PreferencesHelperImpl getPreferencesHelperImpl();
+
+    AppCookie getAppCookie();
 }

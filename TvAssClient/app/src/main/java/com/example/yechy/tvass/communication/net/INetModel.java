@@ -9,5 +9,11 @@ import io.reactivex.Flowable;
  */
 
 public interface INetModel {
-    Flowable<Device> startSearchDevice();
+    Flowable<Device> registerSearchMessage();
+    Flowable<Boolean> closeUdpSocket();
+    Flowable<Boolean> startSearchDevice();
+
+    Flowable<Boolean> connectDevice(String ip, int port);
+    Flowable<Boolean> disconnectDevice();
+    Flowable<Boolean> sendKeyCode(int keyCode, byte keyStatus);
 }
