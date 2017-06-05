@@ -4,6 +4,7 @@ package com.example.yechy.tvass.communication.net;
 import com.example.yechy.tvass.flatbuffers.FlatUtil;
 import com.example.yechy.tvass.flatbuffers.TcpMsgType;
 import com.example.yechy.tvass.flatbuffers.TcpResponse;
+import com.example.yechy.tvass.util.DataTool;
 import com.example.yechy.tvass.util.L;
 
 import java.io.IOException;
@@ -43,8 +44,8 @@ public class TcpClient {
             if (mSocket.isConnected()) {
                 //设置读流超时时间
 //                mSocket.setSoTimeout(INPUTSTREAM_READ_TIMEOUT);
-                mInputStream = mSocket.getInputStream();
                 mOutputStream = mSocket.getOutputStream();
+                mInputStream = mSocket.getInputStream();
 
                 if (processConnectInfo()) {
                     L.i(TAG, "Connect device " + ip + ":" + port + " success.");
@@ -72,39 +73,50 @@ public class TcpClient {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
 
     public void sendTcpData(byte[] data) throws IOException {
-        L.d(TAG, "sendTcpData()");
+        L.d(TAG, "sendTcpData(), sendData size = " + data.length);
         if (mSocket != null && mSocket.isConnected() && mOutputStream != null) {
             L.d(TAG, "sendTcpData(), Ready to send data...");
+            mOutputStream.write(DataTool.intToBytes(data.length));
             mOutputStream.write(data);
             mOutputStream.flush();
         }
     }
 
-    public byte[] readTcpData() throws IOException {
+    public byte[] readTcpData() throws Exception {
         L.d(TAG, "readTcpData()");
         if (mSocket != null && mSocket.isConnected() && mInputStream != null) {
-            byte[] data = new byte[0];
-            byte[] buf = new byte[1024];
-            int len;
+            int dataLen;
+            byte[] lenBytes = new byte[4];
+            byte[] data;
 
-            L.d(TAG, "readTcpData(), Waiting for read data...");
-            while ((len = mInputStream.read(buf)) != -1) {
-                byte[] temp = new byte[data.length + len];
-                System.arraycopy(data, 0, temp, 0, data.length);
-                System.arraycopy(buf, 0, temp, data.length, len);
-                data = temp;
+            //读取数据长度，定义为int
+            L.d(TAG, "readTcpData(), Waiting to read data...");
+            mInputStream.read(lenBytes, 0, lenBytes.length);
+            dataLen = DataTool.bytesToInt(lenBytes, 0);
+
+            if (dataLen >= 0) {
+                data = new byte[dataLen];
+                mInputStream.read(data, 0, data.length);
+                L.d(TAG, "readTcpData(), return data size = " + data.length);
+                return data;
+            } else {
+                L.w(TAG, "readTcpData(), return data is null");
             }
-            return data;
+            return null;
+        } else {
+            throw new Exception("Socket is null or disconnect");
         }
-        return null;
     }
 
     public void closeSocket() {
+        L.d(TAG, "closeSocket()");
         synchronized (mSocket) {
             if (mInputStream != null) {
                 try {
@@ -123,6 +135,8 @@ public class TcpClient {
 
             if (mSocket != null) {
                 try {
+                    mSocket.shutdownInput();
+                    mSocket.shutdownOutput();
                     mSocket.close();
                     mSocket = null;
                 } catch (IOException e) {

@@ -15,7 +15,7 @@ public interface DeviceContract {
         void setSearchButtonClickable(boolean isClickable);
     }
 
-    interface IPresenetr<T> extends BaseContract.IPresenter<T> {
+    interface IPresenter<T> extends BaseContract.IPresenter<T> {
         void registerSearchMessage();
         void clearDeviceList();
         void startSearchDevices();

@@ -11,8 +11,12 @@ import java.net.DatagramPacket;
 
 import javax.inject.Inject;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by yechy on 2017/4/22.
@@ -54,5 +58,29 @@ public class CommModel implements ICommModel {
     public Flowable<Boolean> sendTcpData(byte[] sendBytes) {
         L.d(TAG, "sendTcpData()");
         return tcpApi.sendTcpMessage(sendBytes);
+    }
+
+    @Override
+    public Flowable<Boolean> closeUdpSocket() {
+        L.d(TAG, "closeUdpSocket()");
+        return Flowable.create(new FlowableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(FlowableEmitter<Boolean> e) throws Exception {
+                udpApi.closeSocket();
+            }
+        }, BackpressureStrategy.ERROR)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Flowable<Boolean> closeTcpSocket() {
+        L.d(TAG, "closeTcpSocket()");
+        return Flowable.create(new FlowableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(FlowableEmitter<Boolean> e) throws Exception {
+                tcpApi.closeSocket();
+            }
+        }, BackpressureStrategy.ERROR)
+                .subscribeOn(Schedulers.io());
     }
 }

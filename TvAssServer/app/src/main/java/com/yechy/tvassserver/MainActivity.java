@@ -1,22 +1,49 @@
 package com.yechy.tvassserver;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.KeyEvent;
+import android.content.Intent;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
-public class MainActivity extends Activity {
+import com.yechy.tvassserver.base.BaseActivity;
+import com.yechy.tvassserver.service.ListenerService;
+
+import butterknife.BindView;
+
+public class MainActivity extends BaseActivity {
+
+
+    @BindView(R.id.switch_service)
+    Switch switchService;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public int getLayoutResId() {
+        return R.layout.activity_main;
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+    public void initData() {
 
-        }
-        return super.onKeyDown(keyCode, event);
     }
+
+    @Override
+    public void configViews() {
+        switchService.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Intent intent = new Intent(MainActivity.this, ListenerService.class);
+                if (isChecked) {
+                    startService(intent);
+                } else {
+                    stopService(intent);
+                }
+            }
+        });
+        switchService.requestFocus();
+    }
+
+    @Override
+    protected String getPageTag() {
+        return null;
+    }
+
 }

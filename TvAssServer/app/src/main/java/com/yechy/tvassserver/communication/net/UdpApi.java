@@ -153,5 +153,12 @@ public class UdpApi {
         };
     }
 
+    public void closeSocket() {
+        L.d(TAG, "closeSocket()");
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+            socket = null;
+        }
+    }
 
 }

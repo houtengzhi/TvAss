@@ -129,4 +129,10 @@ public class ListenerServicePresenter extends BaseRxPresenter<ListenerServiceCon
                 });
         addSubscribe(disposable);
     }
+
+    @Override
+    public void closeSocket() {
+        addSubscribe(commModel.closeUdpSocket().subscribe());
+        addSubscribe(commModel.closeTcpSocket().subscribe());
+    }
 }

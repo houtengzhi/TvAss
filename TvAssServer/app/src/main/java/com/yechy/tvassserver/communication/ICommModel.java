@@ -13,8 +13,9 @@ import io.reactivex.Flowable;
 
 public interface ICommModel {
     Flowable<DatagramPacket> registerUdpMulticast();
+    Flowable<Boolean> closeUdpSocket();
 
     Flowable<TcpMessage> registerTcpMessage(int port);
-
     Flowable<Boolean> sendTcpData(byte[] sendBytes);
+    Flowable<Boolean> closeTcpSocket();
 }

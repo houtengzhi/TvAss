@@ -15,5 +15,6 @@ public interface ListenerServiceContract {
         void registerUdpMulticast();
         void registerTcpMessage();
         void sendTcpData(byte[] sendBytes);
+        void closeSocket();
     }
 }

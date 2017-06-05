@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,21 +15,28 @@ import android.widget.RelativeLayout;
 
 import com.example.yechy.tvass.R;
 import com.example.yechy.tvass.base.BaseRVFragment;
-import com.example.yechy.tvass.communication.NetUtil;
-import com.example.yechy.tvass.util.KeyEvent;
+import com.example.yechy.tvass.model.keytable.AGKeyCode;
+import com.example.yechy.tvass.util.AppCookie;
+import com.example.yechy.tvass.util.L;
 import com.example.yechy.tvass.widget.SendCommentButton;
 import com.example.yechy.tvass.widget.TouchPadView;
-import com.jakewharton.rxbinding2.view.RxView;
 
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Flowable;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 
 import static android.content.Context.VIBRATOR_SERVICE;
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_MOVE;
+import static android.view.MotionEvent.ACTION_UP;
 
 /**
  * Created by yechy on 2017/4/3.
@@ -132,6 +140,11 @@ public class RemoteFragment extends BaseRVFragment<RemotePresenter> implements R
     private static final String TAG = RemoteFragment.class.getSimpleName();
     private Unbinder unbinder;
     private Vibrator mVibrator;
+    private OnMockKeyListener onMockKeyListener = new OnMockKeyListener();
+    private Disposable timerDisposable;
+
+    @Inject
+    public AppCookie appCookie;
 
     @Override
     public int getLayoutResId() {
@@ -150,70 +163,68 @@ public class RemoteFragment extends BaseRVFragment<RemotePresenter> implements R
 
     @Override
     public void configViews() {
-        addSubscribe(RxView.clicks(imgBtnRemoteChPlus)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_CHANNEL_UP)));
+        imgBtnRemoteChPlus.setTag(R.id.tag_keycode, AGKeyCode.CHANNEL_UP);
+        imgBtnRemoteChMinus.setTag(R.id.tag_keycode, AGKeyCode.CHANNEL_DOWN);
+        imgBtnRemoteVolPlus.setTag(R.id.tag_keycode, AGKeyCode.VOLUME_UP);
+        imgBtnRemoteVolMinus.setTag(R.id.tag_keycode, AGKeyCode.VOLUME_DOWN);
 
-        addSubscribe(RxView.clicks(imgBtnRemoteChMinus)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_CHANNEL_DOWN)));
 
-        addSubscribe(RxView.clicks(btnRemote0)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_0)));
 
-        addSubscribe(RxView.clicks(btnRemote1)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_1)));
 
-        addSubscribe(RxView.clicks(btnRemote2)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_2)));
+        setupListener();
+    }
 
-        addSubscribe(RxView.clicks(btnRemote3)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_3)));
-
-        addSubscribe(RxView.clicks(btnRemote4)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_4)));
-
-        addSubscribe(RxView.clicks(btnRemote5)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_5)));
-
-        addSubscribe(RxView.clicks(btnRemote6)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_6)));
-
-        addSubscribe(RxView.clicks(btnRemote7)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_7)));
-
-        addSubscribe(RxView.clicks(btnRemote8)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_8)));
-
-        addSubscribe(RxView.clicks(btnRemote9)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe(new OnKeyConsumer(KeyEvent.KEYCODE_9)));
-
+    private void setupListener() {
+        imgBtnRemoteChPlus.setOnTouchListener(onMockKeyListener);
+        imgBtnRemoteChMinus.setOnTouchListener(onMockKeyListener);
+        imgBtnRemoteVolPlus.setOnTouchListener(onMockKeyListener);
+        imgBtnRemoteVolMinus.setOnTouchListener(onMockKeyListener);
 
     }
 
-    public class OnKeyConsumer implements Consumer {
-        private int keyCode;
-
-        public OnKeyConsumer(int keyCode) {
-            this.keyCode = keyCode;
-        }
+    public class OnMockKeyListener implements View.OnTouchListener {
 
         @Override
-        public void accept(@NonNull Object o) throws Exception {
-            mVibrator.vibrate(50);
-            NetUtil.getInstance().sendKey(keyCode);
+        public boolean onTouch(View v, MotionEvent event) {
+            final int keyCode = (int) v.getTag(R.id.tag_keycode);
+            final int action = event.getAction();
+            L.d(TAG, "onTouch(), keyCode = " + keyCode + ", action = " + action);
+            switch (action) {
+                case ACTION_DOWN:
+                    timerDisposable = Flowable.interval(0, 50, TimeUnit.MILLISECONDS)
+                            .map(new Function<Long, Boolean>() {
+                                @Override
+                                public Boolean apply(@NonNull Long aLong) throws Exception {
+                                    L.d(TAG, "onTouch(), key is pressed");
+//                                    if (appCookie.isConnect()) {
+//                                        mPresenter.sendKeyCode(keyCode, (byte) action);
+//                                    }
+                                    return true;
+                                }
+                            })
+                            .subscribe();
+
+                    break;
+
+                case ACTION_MOVE:
+                    break;
+
+                case ACTION_UP:
+                    if (timerDisposable != null && !timerDisposable.isDisposed()) {
+                        timerDisposable.dispose();
+                    }
+                    mVibrator.vibrate(50);
+//                    if (appCookie.isConnect()) {
+//                        mPresenter.sendKeyCode(keyCode, (byte) action);
+//                    }
+                    break;
+            }
+
+
+            return false;
         }
     }
+
 
     public RemoteFragment() {
     }

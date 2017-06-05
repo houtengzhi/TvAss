@@ -11,7 +11,7 @@ public interface RemoteContract {
 
     }
 
-    interface IPresenetr<T> extends BaseContract.IPresenter<T> {
-
+    interface IPresenter<T> extends BaseContract.IPresenter<T> {
+        void sendKeyCode(int keyCode, byte keyStatus);
     }
 }

@@ -10,6 +10,7 @@ import javax.inject.Inject;
  */
 
 public class AppCookie {
+    private static final String TAG = AppCookie.class.getSimpleName();
     private boolean isConnect = false;
     private IPreferencesHelper mPreferencesHelper;
 
@@ -19,18 +20,22 @@ public class AppCookie {
     }
 
     public boolean isConnect() {
+        L.d(TAG, "isConnect(), return " + isConnect);
         return isConnect;
     }
 
     public void setConnect(boolean connect) {
+        L.d(TAG, "setConnect(), connect = " + connect);
         isConnect = connect;
     }
 
     public void saveConnectedDeviceInfo(Device device) {
+        L.d(TAG, "saveConnectedDeviceInfo(),");
         mPreferencesHelper.saveConnectedDeviceInfo(device);
     }
 
     public Device getConnectedDeviceInfo() {
+        L.d(TAG, "getConnectedDeviceInfo()");
         return mPreferencesHelper.getConnectedDeviceInfo();
     }
 }

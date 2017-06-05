@@ -27,7 +27,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
  */
 
 public class DevicePresenter extends BaseRxPresenter<DeviceContract.IView>
-        implements DeviceContract.IPresenetr<DeviceContract.IView> {
+        implements DeviceContract.IPresenter<DeviceContract.IView> {
     private static final String TAG= DevicePresenter.class.getSimpleName();
 
     private CommModel commModel;

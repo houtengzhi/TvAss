@@ -35,12 +35,15 @@ public class ListenerService extends BaseRxService<ListenerServicePresenter>
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        L.d(TAG, "onStartCommand()");
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        L.d(TAG, "onDestroy()");
+        mPresenter.closeSocket();
     }
 
 
