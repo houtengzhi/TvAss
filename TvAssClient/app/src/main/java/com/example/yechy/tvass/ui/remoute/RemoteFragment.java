@@ -167,8 +167,16 @@ public class RemoteFragment extends BaseRVFragment<RemotePresenter> implements R
         imgBtnRemoteChMinus.setTag(R.id.tag_keycode, AGKeyCode.CHANNEL_DOWN);
         imgBtnRemoteVolPlus.setTag(R.id.tag_keycode, AGKeyCode.VOLUME_UP);
         imgBtnRemoteVolMinus.setTag(R.id.tag_keycode, AGKeyCode.VOLUME_DOWN);
-
-
+        btnRemote0.setTag(R.id.tag_keycode, AGKeyCode.NUM_0);
+        btnRemote1.setTag(R.id.tag_keycode, AGKeyCode.NUM_1);
+        btnRemote2.setTag(R.id.tag_keycode, AGKeyCode.NUM_2);
+        btnRemote3.setTag(R.id.tag_keycode, AGKeyCode.NUM_3);
+        btnRemote4.setTag(R.id.tag_keycode, AGKeyCode.NUM_4);
+        btnRemote5.setTag(R.id.tag_keycode, AGKeyCode.NUM_5);
+        btnRemote6.setTag(R.id.tag_keycode, AGKeyCode.NUM_6);
+        btnRemote7.setTag(R.id.tag_keycode, AGKeyCode.NUM_7);
+        btnRemote8.setTag(R.id.tag_keycode, AGKeyCode.NUM_8);
+        btnRemote9.setTag(R.id.tag_keycode, AGKeyCode.NUM_9);
 
 
         setupListener();
@@ -179,6 +187,17 @@ public class RemoteFragment extends BaseRVFragment<RemotePresenter> implements R
         imgBtnRemoteChMinus.setOnTouchListener(onMockKeyListener);
         imgBtnRemoteVolPlus.setOnTouchListener(onMockKeyListener);
         imgBtnRemoteVolMinus.setOnTouchListener(onMockKeyListener);
+        btnRemote0.setOnTouchListener(onMockKeyListener);
+        btnRemote1.setOnTouchListener(onMockKeyListener);
+        btnRemote2.setOnTouchListener(onMockKeyListener);
+        btnRemote3.setOnTouchListener(onMockKeyListener);
+        btnRemote4.setOnTouchListener(onMockKeyListener);
+        btnRemote5.setOnTouchListener(onMockKeyListener);
+        btnRemote6.setOnTouchListener(onMockKeyListener);
+        btnRemote7.setOnTouchListener(onMockKeyListener);
+        btnRemote8.setOnTouchListener(onMockKeyListener);
+        btnRemote9.setOnTouchListener(onMockKeyListener);
+
 
     }
 
@@ -191,14 +210,18 @@ public class RemoteFragment extends BaseRVFragment<RemotePresenter> implements R
             L.d(TAG, "onTouch(), keyCode = " + keyCode + ", action = " + action);
             switch (action) {
                 case ACTION_DOWN:
-                    timerDisposable = Flowable.interval(0, 50, TimeUnit.MILLISECONDS)
+                    L.d(TAG, "onTouch(), key is pressed first");
+                    if (appCookie.isConnect()) {
+                        mPresenter.sendKeyCode(keyCode, (byte) action);
+                    }
+                    timerDisposable = Flowable.interval(500, 50, TimeUnit.MILLISECONDS)
                             .map(new Function<Long, Boolean>() {
                                 @Override
                                 public Boolean apply(@NonNull Long aLong) throws Exception {
-                                    L.d(TAG, "onTouch(), key is pressed");
-//                                    if (appCookie.isConnect()) {
-//                                        mPresenter.sendKeyCode(keyCode, (byte) action);
-//                                    }
+                                    L.d(TAG, "onTouch(), key is pressed " + aLong.intValue());
+                                    if (appCookie.isConnect()) {
+                                        mPresenter.sendKeyCode(keyCode, (byte) action);
+                                    }
                                     return true;
                                 }
                             })
@@ -214,9 +237,9 @@ public class RemoteFragment extends BaseRVFragment<RemotePresenter> implements R
                         timerDisposable.dispose();
                     }
                     mVibrator.vibrate(50);
-//                    if (appCookie.isConnect()) {
-//                        mPresenter.sendKeyCode(keyCode, (byte) action);
-//                    }
+                    if (appCookie.isConnect()) {
+                        mPresenter.sendKeyCode(keyCode, (byte) action);
+                    }
                     break;
             }
 
